@@ -41,6 +41,24 @@ PRODUCTOS = [
 ]
 
 
+# Freely licensed photos (Flickr, Wikimedia Commons, rawpixel); credits are in the README.
+IMAGENES = {
+    "Submariner Date": "https://commons.wikimedia.org/wiki/Special:FilePath/Rolex-Submariner.jpg?width=800",
+    "Datejust 36": "https://commons.wikimedia.org/wiki/Special:FilePath/Rolex_Datejust_16013.jpg?width=800",
+    "Love Bracelet": "https://images.rawpixel.com/editor_1024/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA0L2JzMjE2LWltYWdlLmpwZw.jpg",
+    "Trinity Ring": "https://live.staticflickr.com/3253/2912886508_e90c9c323a_b.jpg",
+    "Tank Must": "https://live.staticflickr.com/7411/8726195627_2d269e3e36_b.jpg",
+    "Solitario Tiffany Setting": "https://live.staticflickr.com/8407/8856273094_35b37d76bb_b.jpg",
+    "Return to Tiffany Heart Tag": "https://live.staticflickr.com/4015/4310572058_bcddd76d16_b.jpg",
+    "Aros HardWear": "https://live.staticflickr.com/7199/7108432427_5d87e9b921_b.jpg",
+    "Pulsera Moments": "https://live.staticflickr.com/5137/5414491162_c91657be7e_b.jpg",
+    "Collar Corazón Brillante": "https://live.staticflickr.com/4086/5034602602_e2bb490f97_b.jpg",
+    "Aros Estrella": "https://live.staticflickr.com/3948/15469374956_268b7f7b16.jpg",
+    "G-Shock GA-2100": "https://live.staticflickr.com/4133/5090839386_e0069a20aa_b.jpg",
+    "Vintage A168": "https://live.staticflickr.com/65535/51500724840_f4599bb277_b.jpg",
+}
+
+
 def seed(session: Session) -> bool:
     """Inserts the sample data once. Returns False if the database already had marcas."""
     if session.exec(select(Marca)).first():
@@ -51,7 +69,6 @@ def seed(session: Session) -> bool:
     session.add_all([*marcas.values(), *categorias.values()])
 
     for nombre, descripcion, material, precio, stock, marca, categoria in PRODUCTOS:
-        slug = nombre.lower().replace(" ", "-")
         session.add(
             Producto(
                 nombre=nombre,
@@ -59,7 +76,7 @@ def seed(session: Session) -> bool:
                 material=material,
                 precio=Decimal(precio),
                 stock=stock,
-                imagen=f"https://picsum.photos/seed/{slug}/600/600",
+                imagen=IMAGENES[nombre],
                 marca=marcas[marca],
                 categoria=categorias[categoria],
             )

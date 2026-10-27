@@ -30,6 +30,8 @@ La API queda en `http://localhost:8000` y la documentación interactiva en `http
 
 Sin uv: `pip install -r requirements.txt` y los mismos comandos sin `uv run`.
 
+El script de datos de ejemplo no hace nada si la base ya tiene marcas. Para volver a cargarlos desde cero, borrar `joyeria.db` y repetir `alembic upgrade head` y `python -m src.seed`.
+
 ## Endpoints
 
 Cada modelo tiene cinco endpoints: `marcas`, `categorias` y `productos`.
@@ -75,3 +77,23 @@ uv run alembic upgrade head
 ## Captura de /docs
 
 ![Documentación interactiva en /docs](docs/endpoints.png)
+
+## Créditos de las imágenes
+
+Las imágenes de los datos de ejemplo tienen licencia libre. Son fotos ilustrativas, no de los productos reales de cada marca.
+
+| Producto | Autor | Licencia | Fuente |
+| --- | --- | --- | --- |
+| Love Bracelet | Sin autor indicado | CC0 1.0 | [Ver](https://www.rawpixel.com/image/11524339/photo-image-gold-public-domain-ring) |
+| Trinity Ring | zeevveez | CC BY 2.0 | [Ver](https://www.flickr.com/photos/29001414@N00/2912886508) |
+| Tank Must | GuySie | CC BY-SA 2.0 | [Ver](https://www.flickr.com/photos/76491533@N00/8726195627) |
+| Solitario Tiffany Setting | Instant Vantage | CC BY-SA 2.0 | [Ver](https://www.flickr.com/photos/44312356@N04/8856273094) |
+| Return to Tiffany Heart Tag | anniehp | CC BY 2.0 | [Ver](https://www.flickr.com/photos/41869756@N05/4310572058) |
+| Pulsera Moments | CosmoPolitician | CC BY 2.0 | [Ver](https://www.flickr.com/photos/92705627@N00/5414491162) |
+| Collar Corazón Brillante | The ChainMaille Lady | CC BY 2.0 | [Ver](https://www.flickr.com/photos/26800041@N04/5034602602) |
+| G-Shock GA-2100 | GuySie | CC BY-SA 2.0 | [Ver](https://www.flickr.com/photos/76491533@N00/5090839386) |
+| Aros HardWear | Christine Gierer | CC BY-SA 2.0 | [Ver](https://www.flickr.com/photos/97925861@N00/7108432427) |
+| Aros Estrella | Star Harvest Silver Jewelry | CC BY-SA 2.0 | [Ver](https://www.flickr.com/photos/127460190@N03/15469374956) |
+| Vintage A168 | John Booty | CC BY 2.0 | [Ver](https://www.flickr.com/photos/53874519@N00/51500724840) |
+| Submariner Date | Sin autor indicado | Dominio público | [Ver](https://commons.wikimedia.org/wiki/File:Rolex-Submariner.jpg) |
+| Datejust 36 | Sin autor indicado | CC0 1.0 | [Ver](https://commons.wikimedia.org/wiki/File:Rolex_Datejust_16013.jpg) |
