@@ -40,8 +40,8 @@ class ProductoUpdate(SQLModel):
     precio: Annotated[Decimal | None, Field(gt=0, max_digits=10, decimal_places=2)] = None
     stock: Annotated[int | None, Field(ge=0)] = None
     imagen: Annotated[str | None, Field(max_length=500)] = None
-    marca_id: int | None = None
-    categoria_id: int | None = None
+    marca_id: Annotated[int | None, Field(default=None)] = None
+    categoria_id: Annotated[int | None, Field(default=None)] = None
 
     # Omitted fields keep their value; an explicit null on a NOT NULL column is rejected.
     @field_validator("nombre", "material", "precio", "stock", "marca_id", "categoria_id")
@@ -52,16 +52,10 @@ class ProductoUpdate(SQLModel):
         return value
 
 
-# Nested schemas live here because they need ProductoPublic, and importing it
-# from marca.py or categoria.py would create a circular import.
-class ProductoPublicWithMarcaAndCategoria(ProductoPublic):
+# Schemas anidados (se definen en anidados.py siguiendo el patrón de la cátedra)
+class ProductoNested(ProductoPublic):
     marca: MarcaPublic
     categoria: CategoriaPublic
 
 
-class MarcaPublicWithProductos(MarcaPublic):
-    productos: list[ProductoPublic] = []
-
-
-class CategoriaPublicWithProductos(CategoriaPublic):
-    productos: list[ProductoPublic] = []
+ProductoPublicWithMarcaAndCategoria = ProductoNested

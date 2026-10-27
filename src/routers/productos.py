@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, Path, Query, status
 from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, select
@@ -7,8 +9,8 @@ from src.database import SessionDep
 from src.models import (
     Producto,
     ProductoCreate,
+    ProductoNested,
     ProductoPublic,
-    ProductoPublicWithMarcaAndCategoria,
     ProductoUpdate,
 )
 from src.routers.categorias import get_categoria_or_404
@@ -16,7 +18,19 @@ from src.routers.marcas import get_marca_or_404
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
-NOT_FOUND = {404: {"description": "Producto, marca o categoría no encontrada"}}
+NOT_FOUND_RESPONSE = {
+    404: {
+        "description": "Producto, marca o categoría no encontrada",
+        "content": {
+            "application/json": {
+                "example": {
+                    "detail": "Producto no encontrado",
+                }
+            }
+        },
+    },
+}
+NOT_FOUND = NOT_FOUND_RESPONSE
 
 
 def get_producto_or_404(session: Session, producto_id: int) -> Producto:
@@ -38,7 +52,7 @@ def check_relations(session: Session, data: dict) -> None:
     "",
     response_model=ProductoPublic,
     status_code=status.HTTP_201_CREATED,
-    responses=NOT_FOUND,
+    responses=NOT_FOUND_RESPONSE,
 )
 def create_producto(producto: ProductoCreate, session: SessionDep):
     check_relations(session, producto.model_dump())
@@ -51,7 +65,9 @@ def create_producto(producto: ProductoCreate, session: SessionDep):
 
 @router.get("", response_model=Page[ProductoPublic])
 def list_productos(
-    session: SessionDep, marca_id: int | None = None, categoria_id: int | None = None
+    session: SessionDep,
+    marca_id: Annotated[int | None, Query(description="Filtrar por marca_id")] = None,
+    categoria_id: Annotated[int | None, Query(description="Filtrar por categoria_id")] = None,
 ):
     query = select(Producto).order_by(Producto.id)
     if marca_id is not None:
@@ -63,15 +79,23 @@ def list_productos(
 
 @router.get(
     "/{producto_id}",
-    response_model=ProductoPublicWithMarcaAndCategoria,
-    responses=NOT_FOUND,
+    response_model=ProductoNested,
+    responses=NOT_FOUND_RESPONSE,
 )
-def read_producto(producto_id: int, session: SessionDep):
+def read_producto(
+    producto_id: Annotated[int, Path(gt=0, description="Id del producto. >0")],
+    session: SessionDep,
+):
     return get_producto_or_404(session, producto_id)
 
 
-@router.patch("/{producto_id}", response_model=ProductoPublic, responses=NOT_FOUND)
-def update_producto(producto_id: int, producto: ProductoUpdate, session: SessionDep):
+@router.put("/{producto_id}", response_model=ProductoPublic, responses=NOT_FOUND_RESPONSE)
+@router.patch("/{producto_id}", response_model=ProductoPublic, responses=NOT_FOUND_RESPONSE)
+def update_producto(
+    producto_id: Annotated[int, Path(gt=0, description="Id del producto. >0")],
+    producto: ProductoUpdate,
+    session: SessionDep,
+):
     db_producto = get_producto_or_404(session, producto_id)
     data = producto.model_dump(exclude_unset=True)
     check_relations(session, data)
@@ -83,9 +107,12 @@ def update_producto(producto_id: int, producto: ProductoUpdate, session: Session
 
 
 @router.delete(
-    "/{producto_id}", status_code=status.HTTP_204_NO_CONTENT, responses=NOT_FOUND
+    "/{producto_id}", status_code=status.HTTP_204_NO_CONTENT, responses=NOT_FOUND_RESPONSE
 )
-def delete_producto(producto_id: int, session: SessionDep):
+def delete_producto(
+    producto_id: Annotated[int, Path(gt=0, description="Id del producto. >0")],
+    session: SessionDep,
+):
     db_producto = get_producto_or_404(session, producto_id)
     session.delete(db_producto)
     session.commit()
