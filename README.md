@@ -4,4 +4,5 @@ API REST construida con FastAPI y SQLModel para una tienda de joyería y relojer
 
 ## Integrantes
 
-- A definir
+- Altamirano, Julian
+- Sosa Zabala, Rodrigo Ezequiel
