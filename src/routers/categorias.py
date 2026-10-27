@@ -1,0 +1,69 @@
+from fastapi import APIRouter, HTTPException, status
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlmodel import Session, select
+
+from src.database import SessionDep
+from src.models import (
+    Categoria,
+    CategoriaCreate,
+    CategoriaPublic,
+    CategoriaPublicWithProductos,
+    CategoriaUpdate,
+)
+
+router = APIRouter(prefix="/categorias", tags=["Categorías"])
+
+NOT_FOUND = {404: {"description": "Categoría no encontrada"}}
+
+
+def get_categoria_or_404(session: Session, categoria_id: int) -> Categoria:
+    categoria = session.get(Categoria, categoria_id)
+    if not categoria:
+        raise HTTPException(status_code=404, detail="Categoría no encontrada")
+    return categoria
+
+
+@router.post("", response_model=CategoriaPublic, status_code=status.HTTP_201_CREATED)
+def create_categoria(categoria: CategoriaCreate, session: SessionDep):
+    db_categoria = Categoria.model_validate(categoria)
+    session.add(db_categoria)
+    session.commit()
+    session.refresh(db_categoria)
+    return db_categoria
+
+
+@router.get("", response_model=Page[CategoriaPublic])
+def list_categorias(session: SessionDep):
+    return paginate(session, select(Categoria).order_by(Categoria.id))
+
+
+@router.get(
+    "/{categoria_id}", response_model=CategoriaPublicWithProductos, responses=NOT_FOUND
+)
+def read_categoria(categoria_id: int, session: SessionDep):
+    return get_categoria_or_404(session, categoria_id)
+
+
+@router.patch("/{categoria_id}", response_model=CategoriaPublic, responses=NOT_FOUND)
+def update_categoria(categoria_id: int, categoria: CategoriaUpdate, session: SessionDep):
+    db_categoria = get_categoria_or_404(session, categoria_id)
+    db_categoria.sqlmodel_update(categoria.model_dump(exclude_unset=True))
+    session.add(db_categoria)
+    session.commit()
+    session.refresh(db_categoria)
+    return db_categoria
+
+
+@router.delete(
+    "/{categoria_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={**NOT_FOUND, 409: {"description": "La categoría tiene productos asociados"}},
+)
+def delete_categoria(categoria_id: int, session: SessionDep):
+    db_categoria = get_categoria_or_404(session, categoria_id)
+    # SQLite does not enforce foreign keys by default, so orphaned productos must be prevented here.
+    if db_categoria.productos:
+        raise HTTPException(status_code=409, detail="La categoría tiene productos asociados")
+    session.delete(db_categoria)
+    session.commit()

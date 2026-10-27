@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import Annotated
 
+from pydantic import field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 from src.models.categoria import Categoria, CategoriaPublic
@@ -41,6 +42,14 @@ class ProductoUpdate(SQLModel):
     imagen: Annotated[str | None, Field(max_length=500)] = None
     marca_id: int | None = None
     categoria_id: int | None = None
+
+    # Omitted fields keep their value; an explicit null on a NOT NULL column is rejected.
+    @field_validator("nombre", "material", "precio", "stock", "marca_id", "categoria_id")
+    @classmethod
+    def not_null(cls, value):
+        if value is None:
+            raise ValueError("no puede ser null")
+        return value
 
 
 # Nested schemas live here because they need ProductoPublic, and importing it
