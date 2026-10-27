@@ -1,7 +1,7 @@
-# EFI Python - Joyería y Relojería API
+# EFI Python - API de Joyería y Relojería
 
-REST API built with FastAPI and SQLModel for a jewelry and watch store.
+API REST construida con FastAPI y SQLModel para una tienda de joyería y relojería.
 
-## Team
+## Integrantes
 
-- TBD
+- A definir
