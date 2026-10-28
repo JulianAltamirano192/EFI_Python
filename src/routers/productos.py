@@ -23,8 +23,10 @@ NOT_FOUND_RESPONSE = {
         "description": "Producto, marca o categoría no encontrada",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Producto no encontrado",
+                "examples": {
+                    "producto": {"value": {"detail": "Producto no encontrado"}},
+                    "marca": {"value": {"detail": "Marca no encontrada"}},
+                    "categoria": {"value": {"detail": "Categoría no encontrada"}},
                 }
             }
         },
