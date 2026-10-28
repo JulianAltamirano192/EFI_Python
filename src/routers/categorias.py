@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, select
 
-from src.database import SessionDep
+from src.database import SessionDep, save_changes
 from src.models import (
     Categoria,
     CategoriaCreate,
@@ -28,8 +28,6 @@ NOT_FOUND_RESPONSE = {
         },
     },
 }
-NOT_FOUND = NOT_FOUND_RESPONSE
-
 
 def get_categoria_or_404(session: Session, categoria_id: int) -> Categoria:
     categoria = session.get(Categoria, categoria_id)
@@ -62,19 +60,23 @@ def read_categoria(
     return get_categoria_or_404(session, categoria_id)
 
 
+# PUT replaces the whole resource: omitted optional fields go back to their defaults.
 @router.put("/{categoria_id}", response_model=CategoriaPublic, responses=NOT_FOUND_RESPONSE)
+def replace_categoria(
+    categoria_id: Annotated[int, Path(gt=0, description="Id de la categoría. >0")],
+    categoria: CategoriaCreate,
+    session: SessionDep,
+):
+    return save_changes(session, get_categoria_or_404(session, categoria_id), categoria.model_dump())
+
+
 @router.patch("/{categoria_id}", response_model=CategoriaPublic, responses=NOT_FOUND_RESPONSE)
 def update_categoria(
     categoria_id: Annotated[int, Path(gt=0, description="Id de la categoría. >0")],
     categoria: CategoriaUpdate,
     session: SessionDep,
 ):
-    db_categoria = get_categoria_or_404(session, categoria_id)
-    db_categoria.sqlmodel_update(categoria.model_dump(exclude_unset=True))
-    session.add(db_categoria)
-    session.commit()
-    session.refresh(db_categoria)
-    return db_categoria
+    return save_changes(session, get_categoria_or_404(session, categoria_id), categoria.model_dump(exclude_unset=True))
 
 
 @router.delete(

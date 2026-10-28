@@ -28,6 +28,8 @@ uv run fastapi dev src/main.py
 
 La API queda en `http://localhost:8000` y la documentación interactiva en `http://localhost:8000/docs`.
 
+En producción, definir la variable `FRONTEND_URL` con el dominio del frontend (por ejemplo `https://efi-javascript.vercel.app`) para que CORS lo permita.
+
 Sin uv: `pip install -r requirements.txt` y los mismos comandos sin `uv run`.
 
 El script de datos de ejemplo no hace nada si la base ya tiene marcas. Para volver a cargarlos desde cero, borrar `joyeria.db` y repetir `alembic upgrade head` y `python -m src.seed`.
@@ -41,7 +43,8 @@ Cada modelo tiene cinco endpoints: `marcas`, `categorias` y `productos`.
 | `POST` | `/productos` | Crea un producto (201) |
 | `GET` | `/productos?page=1&size=50` | Lista paginada |
 | `GET` | `/productos/{id}` | Detalle con datos anidados |
-| `PUT` / `PATCH` | `/productos/{id}` | Actualiza campos enviados (soporta PUT y PATCH) |
+| `PUT` | `/productos/{id}` | Reemplaza el producto entero (exige todos los obligatorios) |
+| `PATCH` | `/productos/{id}` | Actualiza solo los campos enviados |
 | `DELETE` | `/productos/{id}` | Elimina (204, sin cuerpo) |
 
 - El listado devuelve `{ items, total, page, size, pages }`.

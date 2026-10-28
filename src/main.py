@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
@@ -18,6 +20,8 @@ app.add_middleware(
         "http://localhost:5174",
         "http://localhost:3000",
         "http://127.0.0.1:5500",  # Live Server (entorno de pruebas del docente)
+        # Deployed frontend, e.g. https://efi-javascript.vercel.app
+        *filter(None, [os.getenv("FRONTEND_URL")]),
     ],
     allow_credentials=True,
     allow_methods=["*"],

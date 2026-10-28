@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, select
 
-from src.database import SessionDep
+from src.database import SessionDep, save_changes
 from src.models import (
     Producto,
     ProductoCreate,
@@ -23,15 +23,15 @@ NOT_FOUND_RESPONSE = {
         "description": "Producto, marca o categoría no encontrada",
         "content": {
             "application/json": {
-                "example": {
-                    "detail": "Producto no encontrado",
+                "examples": {
+                    "producto": {"value": {"detail": "Producto no encontrado"}},
+                    "marca": {"value": {"detail": "Marca no encontrada"}},
+                    "categoria": {"value": {"detail": "Categoría no encontrada"}},
                 }
             }
         },
     },
 }
-NOT_FOUND = NOT_FOUND_RESPONSE
-
 
 def get_producto_or_404(session: Session, producto_id: int) -> Producto:
     producto = session.get(Producto, producto_id)
@@ -89,7 +89,19 @@ def read_producto(
     return get_producto_or_404(session, producto_id)
 
 
+# PUT replaces the whole resource: omitted optional fields go back to their defaults.
 @router.put("/{producto_id}", response_model=ProductoPublic, responses=NOT_FOUND_RESPONSE)
+def replace_producto(
+    producto_id: Annotated[int, Path(gt=0, description="Id del producto. >0")],
+    producto: ProductoCreate,
+    session: SessionDep,
+):
+    db_producto = get_producto_or_404(session, producto_id)
+    data = producto.model_dump()
+    check_relations(session, data)
+    return save_changes(session, db_producto, data)
+
+
 @router.patch("/{producto_id}", response_model=ProductoPublic, responses=NOT_FOUND_RESPONSE)
 def update_producto(
     producto_id: Annotated[int, Path(gt=0, description="Id del producto. >0")],
@@ -99,11 +111,7 @@ def update_producto(
     db_producto = get_producto_or_404(session, producto_id)
     data = producto.model_dump(exclude_unset=True)
     check_relations(session, data)
-    db_producto.sqlmodel_update(data)
-    session.add(db_producto)
-    session.commit()
-    session.refresh(db_producto)
-    return db_producto
+    return save_changes(session, db_producto, data)
 
 
 @router.delete(

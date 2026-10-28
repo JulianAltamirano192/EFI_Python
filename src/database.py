@@ -16,3 +16,11 @@ def get_session() -> Generator[Session]:
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
+
+
+def save_changes(session: Session, db_obj, data: dict):
+    db_obj.sqlmodel_update(data)
+    session.add(db_obj)
+    session.commit()
+    session.refresh(db_obj)
+    return db_obj

@@ -5,7 +5,7 @@ from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlmodel import Session, select
 
-from src.database import SessionDep
+from src.database import SessionDep, save_changes
 from src.models import Marca, MarcaCreate, MarcaNested, MarcaPublic, MarcaUpdate
 
 router = APIRouter(prefix="/marcas", tags=["Marcas"])
@@ -22,8 +22,6 @@ NOT_FOUND_RESPONSE = {
         },
     },
 }
-NOT_FOUND = NOT_FOUND_RESPONSE
-
 
 def get_marca_or_404(session: Session, marca_id: int) -> Marca:
     marca = session.get(Marca, marca_id)
@@ -54,19 +52,23 @@ def read_marca(
     return get_marca_or_404(session, marca_id)
 
 
+# PUT replaces the whole resource: omitted optional fields go back to their defaults.
 @router.put("/{marca_id}", response_model=MarcaPublic, responses=NOT_FOUND_RESPONSE)
+def replace_marca(
+    marca_id: Annotated[int, Path(gt=0, description="Id de la marca. >0")],
+    marca: MarcaCreate,
+    session: SessionDep,
+):
+    return save_changes(session, get_marca_or_404(session, marca_id), marca.model_dump())
+
+
 @router.patch("/{marca_id}", response_model=MarcaPublic, responses=NOT_FOUND_RESPONSE)
 def update_marca(
     marca_id: Annotated[int, Path(gt=0, description="Id de la marca. >0")],
     marca: MarcaUpdate,
     session: SessionDep,
 ):
-    db_marca = get_marca_or_404(session, marca_id)
-    db_marca.sqlmodel_update(marca.model_dump(exclude_unset=True))
-    session.add(db_marca)
-    session.commit()
-    session.refresh(db_marca)
-    return db_marca
+    return save_changes(session, get_marca_or_404(session, marca_id), marca.model_dump(exclude_unset=True))
 
 
 @router.delete(
