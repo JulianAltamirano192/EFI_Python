@@ -4,7 +4,7 @@ from pydantic import field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from src.models.producto import Producto
+    from src.models.producto import Producto, ProductoPublic
 
 
 class CategoriaBase(SQLModel):
@@ -36,3 +36,7 @@ class CategoriaUpdate(SQLModel):
         if value is None:
             raise ValueError("no puede ser null")
         return value
+
+
+class CategoriaNested(CategoriaPublic):
+    productos: list["ProductoPublic"] = []

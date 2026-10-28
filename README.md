@@ -41,12 +41,12 @@ Cada modelo tiene cinco endpoints: `marcas`, `categorias` y `productos`.
 | `POST` | `/productos` | Crea un producto (201) |
 | `GET` | `/productos?page=1&size=50` | Lista paginada |
 | `GET` | `/productos/{id}` | Detalle con datos anidados |
-| `PATCH` | `/productos/{id}` | Actualiza solo los campos enviados |
+| `PUT` / `PATCH` | `/productos/{id}` | Actualiza campos enviados (soporta PUT y PATCH) |
 | `DELETE` | `/productos/{id}` | Elimina (204, sin cuerpo) |
 
 - El listado devuelve `{ items, total, page, size, pages }`.
 - `GET /productos` acepta además los filtros `marca_id` y `categoria_id`.
-- El detalle de un producto incluye su `marca` y su `categoria`; el de una marca o categoría incluye sus `productos`.
+- El detalle de un producto incluye su `marca` y su `categoria` (`ProductoNested`); el de una marca o categoría incluye sus `productos` (`MarcaNested` y `CategoriaNested`).
 - Si el id no existe se responde 404. Crear o editar un producto con una marca o categoría inexistente también da 404.
 - No se puede borrar una marca o categoría que todavía tiene productos: se responde 409.
 - El `precio` viaja como texto (`"10500.00"`) para no perder decimales.
@@ -70,8 +70,8 @@ uv run alembic upgrade head
     ├── main.py         # app, CORS, routers y paginación
     ├── database.py     # engine de SQLite y sesión
     ├── seed.py         # datos de ejemplo
-    ├── models/         # modelos y schemas de cada entidad
-    └── routers/        # endpoints de cada entidad
+    ├── models/         # modelos, schemas de entidad y anidados.py
+    └── routers/        # endpoints de cada entidad (CRUD)
 ```
 
 ## Captura de /docs
