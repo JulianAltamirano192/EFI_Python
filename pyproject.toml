@@ -7,9 +7,5 @@ dependencies = [
     "alembic>=1.20.1",
     "fastapi-pagination>=0.16.1",
     "fastapi[standard]>=0.162.0",
-    "psycopg[binary]>=3.3.6",
     "sqlmodel>=0.0.48",
 ]
-
-[tool.vercel]
-entrypoint = "src.main:app"

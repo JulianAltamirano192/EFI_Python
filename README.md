@@ -28,14 +28,11 @@ uv run fastapi dev src/main.py
 
 La API queda en `http://localhost:8000` y la documentación interactiva en `http://localhost:8000/docs`.
 
-Por defecto la API usa SQLite (`joyeria.db`). Para usar otra base, definir `DATABASE_URL`; por ejemplo, una URL `postgresql://...` de Postgres (Neon). Las migraciones y el seed usan la misma variable:
+La base es SQLite y por defecto se guarda en `joyeria.db`, en la raíz. Para guardarla en otro lugar (por ejemplo, en el volumen persistente del servidor), definir `DATABASE_URL`. La app, las migraciones y el seed usan la misma variable:
 
 ```bash
-DATABASE_URL=postgresql://usuario:clave@host/base uv run alembic upgrade head
-DATABASE_URL=postgresql://usuario:clave@host/base uv run python -m src.seed
+DATABASE_URL=sqlite:////app/data/joyeria.db uv run alembic upgrade head
 ```
-
-En Vercel la app se carga desde `src.main:app` (configurado en `[tool.vercel]` del `pyproject.toml`).
 
 En producción, definir la variable `FRONTEND_URL` con el dominio del frontend (por ejemplo `https://efi-javascript.vercel.app`) para que CORS lo permita.
 
