@@ -4,8 +4,8 @@ from typing import Annotated
 from pydantic import field_validator
 from sqlmodel import Field, Relationship, SQLModel
 
-from src.models.categoria import Categoria, CategoriaPublic
-from src.models.marca import Marca, MarcaPublic
+from src.models.categoria import Categoria
+from src.models.marca import Marca
 
 
 class ProductoBase(SQLModel):
@@ -50,18 +50,3 @@ class ProductoUpdate(SQLModel):
         if value is None:
             raise ValueError("no puede ser null")
         return value
-
-
-# Nested schemas live here because they need ProductoPublic, and importing it
-# from marca.py or categoria.py would create a circular import.
-class ProductoPublicWithMarcaAndCategoria(ProductoPublic):
-    marca: MarcaPublic
-    categoria: CategoriaPublic
-
-
-class MarcaPublicWithProductos(MarcaPublic):
-    productos: list[ProductoPublic] = []
-
-
-class CategoriaPublicWithProductos(CategoriaPublic):
-    productos: list[ProductoPublic] = []
