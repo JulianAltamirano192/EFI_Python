@@ -1,10 +1,12 @@
+import os
 from collections.abc import Generator
 from typing import Annotated
 
 from fastapi import Depends
 from sqlmodel import Session, create_engine
 
-DATABASE_URL = "sqlite:///./joyeria.db"
+# Production (Coolify) points DATABASE_URL at a SQLite file inside a persistent volume.
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./joyeria.db")
 
 # SQLite only allows one thread per connection by default; FastAPI serves requests from several.
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
