@@ -28,6 +28,8 @@ uv run fastapi dev src/main.py
 
 La API queda en `http://localhost:8000` y la documentación interactiva en `http://localhost:8000/docs`.
 
+En producción, definir la variable `FRONTEND_URL` con el dominio del frontend (por ejemplo `https://efi-javascript.vercel.app`) para que CORS lo permita.
+
 Sin uv: `pip install -r requirements.txt` y los mismos comandos sin `uv run`.
 
 El script de datos de ejemplo no hace nada si la base ya tiene marcas. Para volver a cargarlos desde cero, borrar `joyeria.db` y repetir `alembic upgrade head` y `python -m src.seed`.
