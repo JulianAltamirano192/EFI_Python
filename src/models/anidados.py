@@ -14,9 +14,3 @@ class CategoriaNested(CategoriaPublic):
 class ProductoNested(ProductoPublic):
     marca: MarcaPublic
     categoria: CategoriaPublic
-
-
-# Aliases para mantener compatibilidad
-MarcaPublicWithProductos = MarcaNested
-CategoriaPublicWithProductos = CategoriaNested
-ProductoPublicWithMarcaAndCategoria = ProductoNested

@@ -43,7 +43,8 @@ Cada modelo tiene cinco endpoints: `marcas`, `categorias` y `productos`.
 | `POST` | `/productos` | Crea un producto (201) |
 | `GET` | `/productos?page=1&size=50` | Lista paginada |
 | `GET` | `/productos/{id}` | Detalle con datos anidados |
-| `PUT` / `PATCH` | `/productos/{id}` | Actualiza campos enviados (soporta PUT y PATCH) |
+| `PUT` | `/productos/{id}` | Reemplaza el producto entero (exige todos los obligatorios) |
+| `PATCH` | `/productos/{id}` | Actualiza solo los campos enviados |
 | `DELETE` | `/productos/{id}` | Elimina (204, sin cuerpo) |
 
 - El listado devuelve `{ items, total, page, size, pages }`.
