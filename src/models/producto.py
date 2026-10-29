@@ -15,8 +15,8 @@ class ProductoBase(SQLModel):
     precio: Annotated[Decimal, Field(gt=0, max_digits=10, decimal_places=2)]
     stock: Annotated[int, Field(ge=0)] = 0
     imagen: Annotated[str | None, Field(max_length=500)] = None
-    marca_id: Annotated[int, Field(foreign_key="marca.id")]
-    categoria_id: Annotated[int, Field(foreign_key="categoria.id")]
+    marca_id: Annotated[int, Field(foreign_key="marca.id", index=True)]
+    categoria_id: Annotated[int, Field(foreign_key="categoria.id", index=True)]
 
 
 class Producto(ProductoBase, table=True):
