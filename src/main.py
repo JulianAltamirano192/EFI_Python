@@ -9,7 +9,7 @@ from src.routers import categorias, marcas, productos
 app = FastAPI(
     title="API de Joyería y Relojería",
     description="Gestión de marcas, categorías y productos de una tienda de joyería y relojería.",
-    version="1.2.0",
+    version="1.3.0",
 )
 
 app.add_middleware(
