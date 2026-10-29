@@ -2,6 +2,11 @@
 
 API REST construida con FastAPI y SQLModel para una tienda de joyería y relojería. Gestiona marcas, categorías y productos, y es la API que consume el frontend en React del EFI de JavaScript.
 
+## En producción
+
+- API: `https://efi-joyeria.duckdns.org` (documentación interactiva en https://efi-joyeria.duckdns.org/docs)
+- Frontend que la consume: https://efi-javascript.vercel.app
+
 ## Integrantes
 
 - Altamirano, Julian
@@ -42,7 +47,7 @@ El script de datos de ejemplo no hace nada si la base ya tiene marcas. Para volv
 
 ## Endpoints
 
-Cada modelo tiene cinco endpoints: `marcas`, `categorias` y `productos`.
+Cada modelo tiene seis endpoints: `marcas`, `categorias` y `productos`.
 
 | Método | Ruta | Descripción |
 | --- | --- | --- |
